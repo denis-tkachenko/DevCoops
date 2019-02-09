@@ -1,16 +1,36 @@
 const logic = require('../../logic/users/users')
-const to = require('../../logic/utilities').to
+const to = require('../../utilities/utilities').to
 
-exports.GetTest = (req, res) => res.json({msg: 'Users Works'})
+const validateRegisterInput = require('../../validation/register')
+
+exports.GetTest = (req, res) => res.json(req.user)
 
 exports.PostRegisterUser = async (req, res) => {
+  const {errors, isValid} = validateRegisterInput(req.body)
+  if(!isValid) return res.status(400).json(errors)
+
   const {name, email, password} = req.body
 
   const userExist = await logic.FindUserByEmail(email)
-  if(userExist) return res.status(400).json({email: 'Email already exists'})
+  if(userExist) {
+    errors.email = 'Email already exists'
+    return res.status(400).json(errors)
+  }
 
-  let [err, user] = await to(logic.AddUser({name, email, password}))
-  if(!user) console.log(err)
+  const [err, user] = await to(logic.AddUser({name, email, password}))
+  if(!user) return res.status(404).json({msg: 'Cant add user'})
 
   res.json(user)
+}
+
+exports.PostLogin = async (req, res) => {
+  const {email, password} = req.body
+
+  const user = await logic.FindUserByEmail(email)
+  if(!user) return res.status(404).json({email: 'User not found'})
+
+  const [err, token] = await to(logic.AutenticatedUser(user, password))
+  if(!token) return res.status(404).json({password: 'Password incorect'})
+
+  res.json({success: true, token: `Bearer ${token}`})
 }
