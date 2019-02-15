@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const passport = require('passport')
 
+const login = require('./routes/login/index')
 const users = require('./routes/users/index')
 const profile = require('./routes/profile/index')
 const posts = require('./routes/posts/index')
@@ -28,9 +29,10 @@ app.use(passport.initialize())
 require('./config/passport')(passport)
 
 // Use routes
-app.use('/api/users', users)
-app.use('/api/profile', profile)
-app.use('/api/posts', posts)
+app.use('/login', login)
+app.use('/users', users)
+app.use('/profile', profile)
+app.use('/posts', posts)
 
 const port = process.env.Port || 5000
 

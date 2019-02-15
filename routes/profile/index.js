@@ -1,5 +1,8 @@
 const router = require('express').Router()
+const passport = require('passport')
+const profile = require('./profile')
 
-router.get('/test', (req, res) => res.json({msg: 'Profile Works'}))
+router.get('/', passport.authenticate('jwt', {session: false}), profile.GetProfile)
+router.post('/', passport.authenticate('jwt', {session: false}), profile.PostUserProfile)
 
 module.exports = router
