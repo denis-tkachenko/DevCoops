@@ -44,10 +44,6 @@ const ProfileSchema = new Schema({
         type: String,
         required: true
       },
-      company: {
-        type: String,
-        required: true
-      },
       location: {
         type: String
       },
@@ -78,8 +74,7 @@ const ProfileSchema = new Schema({
         required: true
       },
       fieldofstudy: {
-        type: String,
-        required: true
+        type: String
       },
       from: {
         type: Date,
@@ -117,6 +112,10 @@ const ProfileSchema = new Schema({
   date: {
     type: Date,
     default: Date.now
+  },
+  _deleted: {
+    type: Boolean,
+    default: false
   }
 })
 

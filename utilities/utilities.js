@@ -5,17 +5,25 @@ exports.to = promise =>
   .catch(err => [err]);
 
 
-exports.isEmpty = value => 
-    value === undefined ||
-    value === null ||
-    (typeof value === 'object' && Object.keys(value).length === 0) ||
-    (typeof value === 'string' && value.trim().length === 0)
+const isEmpty = value => 
+  value === undefined ||
+  value === null ||
+  (typeof value === 'object' && Object.keys(value).length === 0) ||
+  (typeof value === 'string' && value.trim().length === 0)
 
-exports.formatError = (reqName, errMessage, err) => {
+exports.isEmpty = isEmpty
+  
+exports.formatLogicError = (reqName, errMessage, err) => {
   const error = {}
 
   error[reqName] = errMessage
   error.original = err
 
   return error
+}
+
+exports.initialiseObjectFields = (fieldaToChack, data = {}) => {
+  fieldaToChack.forEach(field => {
+    data[field] = !isEmpty(data[field])? data[field]: null
+  })
 }

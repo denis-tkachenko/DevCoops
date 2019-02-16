@@ -1,10 +1,10 @@
 const loginLogic = require('../../logic/login/login')
 const userLogic = require('../../logic/users/users')
 const to = require('../../utilities/utilities').to
-const validateLoginInput = require('../../validation/login')
+const validateLoginInput = require('../../validation/login').validateLoginInput
 
 exports.PostLogin = async (req, res) => {
-  const {errors, isValid} = validateLoginInput(req.body)
+  const [errors, isValid] = validateLoginInput(req.body)
   if(!isValid) return res.status(400).json(errors)
 
   const {email, password} = req.body

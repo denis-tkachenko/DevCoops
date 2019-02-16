@@ -1,13 +1,14 @@
 const profileLogic = require('../../logic/profile/profile')
-const validateProfileInput = require('../../validation/profile').validateProfileInput
+const validations = require('../../validation/profile')
 const utilities = require('../../utilities/utilities')
+const moment = require('moment')
 const to = utilities.to
-const formatError = utilities.formatError
+const formatLogicError = utilities.formatLogicError
 
 exports.GetUserProfile = async (req, res) => {
   const errors = {}
   const [err, profile] = await to(profileLogic.GetUserProfileByUserId(req.user.id))
-  if(err) return res.status(404).json(formatError('noprofile', 'There is no profile for this user', err))
+  if(err) return res.status(404).json(formatLogicError('noprofile', 'There is no profile for this user', err))
 
   if(!profile) {
     errors.noprofile = 'There is no profile for this user'
@@ -18,16 +19,11 @@ exports.GetUserProfile = async (req, res) => {
 }
 
 exports.PostUserProfile = async (req, res) => {
-  const {errors, isValid} = validateProfileInput(req.body)
+  const [errors, isValid] = validations.validateProfileInput(req.body)
   if(!isValid) return res.status(400).json(errors)
 
-  const userId = req.user.id
-  const profileFields = req.body
-
-  setProfileInfo(profileFields, userId)
-
-  const [err, profile] = await to(profileLogic.AddEditUserProfile(userId, profileFields))
-  if(err) return res.status(404).json(formatError('profile', null, err))
+  const [err, profile] = await to(profileLogic.AddEditUserProfile(req.user.id, req.body))
+  if(err) return res.status(404).json(formatLogicError('profile', null, err))
 
   if(profile && profile.err) {
     errors.handle = profile.err
@@ -36,27 +32,15 @@ exports.PostUserProfile = async (req, res) => {
 
   if(profile) return res.status(200).json(profile)
   
-  res.status(400).json()
-}
-
-function setProfileInfo(profileFields, userId) {
-  profileFields.social = {}
-  profileFields.user = userId
-
-  if(profileFields.youtube) profileFields.social.youtube = profileFields.youtube
-  if(profileFields.twitter) profileFields.social.twitter = profileFields.twitter
-  if(profileFields.facebook) profileFields.social.facebook = profileFields.facebook
-  if(profileFields.linkdin) profileFields.social.linkdin = profileFields.linkdin
-  if(profileFields.instragram) profileFields.social.instragram = profileFields.instragram
-  if(profileFields.skills !== 'undefined') profileFields.skills = profileFields.skills.split(',')
+  res.res.status(400)
 }
 
 exports.GetProfileByHandle = async (req, res) => {
   const {handle} = req.params, errors = {}
-  if(!handle) return res.status(400)
+  if(!handle) return res.sendStatus(400)
 
   const [err, profile] = await to(profileLogic.GetProfileByHandle(handle))
-  if(err) return res.status(404).json(formatError('profile', 'There is no profile for this handle', err))
+  if(err) return res.status(404).json(formatLogicError('profile', 'There is no profile for this handle', err))
 
   if(!profile) {
     errors.noprofile = 'There is no profile for this user'
@@ -68,10 +52,10 @@ exports.GetProfileByHandle = async (req, res) => {
 
 exports.GetProfileById = async (req, res) => {
   const {profileId} = req.params, errors = {}
-  if(!profileId) return res.status(400)
+  if(!profileId) return res.sendStatus(400)
 
   const [err, profile] = await to(profileLogic.GetProfileById(profileId))
-  if(err) return res.status(404).json(formatError(formatError('profile', 'There is no profile for this id', err)))
+  if(err) return res.status(404).json(formatLogicError('profile', 'There is no profile for this id', err))
 
   if(!profile) {
     errors.noprofile = 'There is no profile for this id'
@@ -82,8 +66,66 @@ exports.GetProfileById = async (req, res) => {
 }
 
 exports.GetAllProfiles = async (req, res) => {
-  const [err, profiles] = await to(profileLogic.GetAllProfiles())
-  if(err) return res.status(404).json(formatError('profile', null, err))
+  const [err, profiles] = await to(profileLogic.GetAllProfiles()), errors = {}
+  if(err) return res.status(404).json(formatLogicError('profile', 'There is no profiles', err))
+
+  if(!profiles) {
+    errors.noprofile = 'There is no profiles'
+    return res.status(400).json(errors)
+  }
 
   res.status(200).json(profiles)
 }
+
+exports.PostAddExperience = async (req, res) => {
+  const newExp = req.body
+  const [errors, isValid] = validations.ValidateExperience(newExp)
+  if(!isValid) return res.status(400).json(errors)
+
+  const [err, profile] = await to(profileLogic.AddProfileExperience(req.user.id, newExp))
+  if(err) return res.status(404).json(formatLogicError('profile', 'Cant update profile', err))
+  
+  res.status(200).json(profile)
+}
+
+exports.PostAddEducation = async (req, res) => {
+  const newEdu = req.body
+  const [errors, isValid] = validations.ValidateEducation(newEdu)
+  if(!isValid) return res.status(400).json(errors)
+
+  const [err, profile] = await to(profileLogic.AddProfileEducation(req.user.id, newEdu))
+  if(err) return res.status(404).json(formatLogicError('profile', 'Cant update profile', err))
+  
+  res.status(200).json(profile)
+}
+
+exports.DeleteExperience  = async (req, res) => {
+  const {expId} = req.params
+  if(!expId) return res.sendStatus(400)
+
+  const [err, profile] = await to(profileLogic.DeleteExperience(expId, req.user.id))
+  if(err) return res.status(404).json(formatLogicError('Somthing went wrong!', err))
+
+  res.status(200).json(profile)
+}
+
+exports.DeleteEducation  = async (req, res) => {
+  const {educationId} = req.params
+  if(!educationId) return res.sendStatus(400)
+
+  const [err, profile] = await to(profileLogic.DeleteEducation(educationId, req.user.id))
+  if(err) return res.status(404).json(formatLogicError('Somthing went wrong!', err))
+
+  res.status(200).json(profile)
+}
+
+exports.DeleteProfile  = async (req, res) => {
+  const {profileId} = req.params
+  if(!profileId) return res.sendStatus(400)
+
+  const [err, profile] = await to(profileLogic.SetProfileActiveStatus(profileId, req.user.id))
+  if(err) return res.status(404).json(formatLogicError('Somthing went wrong!', err))
+
+  res.status(200).json(profile)
+}
+ 
