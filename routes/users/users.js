@@ -1,6 +1,8 @@
 const userLogic = require('../../logic/users/users')
-const to = require('../../utilities/utilities').to
 const validateRegisterInput = require('../../validation/register')
+const utilities = require('../../utilities/utilities')
+const to = utilities.to
+const formatError = utilities.formatError
 
 exports.GetTest = (req, res) => res.json(req.user)
 
@@ -17,7 +19,7 @@ exports.PostRegisterUser = async (req, res) => {
   }
 
   const [err, user] = await to(userLogic.AddUser({name, email, password}))
-  if(!user) return res.status(404).json({msg: 'Cant add user'})
+  if(!user) return res.status(404).json(formatError('user', 'Cant add user', err))
 
   res.json(user)
 }

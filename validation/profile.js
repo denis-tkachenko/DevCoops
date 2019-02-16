@@ -1,12 +1,12 @@
 const Validator = require('validator')
 const isEmpty = require('../utilities/utilities').isEmpty
 
-module.exports = function validateProfileInput(data) {
+exports.validateProfileInput = data => {
   let errors = {}
   
-  data.handel = !isEmpty(data.handel)? data.handel: ''
-  if(!Validator.isLength(data.handel, {min: 2, max:40})) errors.handel = 'Handel needs to be between 2 and 40 characters'
-  if(Validator.isEmpty(data.handel)) errors.handel = 'Profile hendel is required'
+  data.handle = !isEmpty(data.handle)? data.handle: ''
+  if(!Validator.isLength(data.handle, {min: 2, max:40})) errors.handle = 'Handel needs to be between 2 and 40 characters'
+  if(Validator.isEmpty(data.handle)) errors.handle = 'Profile hendel is required'
 
   data.status = !isEmpty(data.status)? data.status: ''
   if(Validator.isEmpty(data.status)) errors.status = 'Stutus filed is required'

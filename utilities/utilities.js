@@ -1,17 +1,21 @@
-const to = promise => {
-  return promise.then(data => {
+exports.to = promise =>
+  promise.then(data => {
      return [null, data];
   })
   .catch(err => [err]);
-}
 
-const isEmpty = (value) => 
+
+exports.isEmpty = value => 
     value === undefined ||
     value === null ||
     (typeof value === 'object' && Object.keys(value).length === 0) ||
     (typeof value === 'string' && value.trim().length === 0)
 
-module.exports = {
-  to,
-  isEmpty
+exports.formatError = (reqName, errMessage, err) => {
+  const error = {}
+
+  error[reqName] = errMessage
+  error.original = err
+
+  return error
 }
