@@ -23,7 +23,7 @@ exports.PostUserProfile = async (req, res) => {
   if(!isValid) return res.status(400).json(errors)
 
   const [err, profile] = await to(profileLogic.AddEditUserProfile(req.user.id, req.body))
-  if(err) return res.status(404).json(formatLogicError('profile', null, err))
+  if(err) return res.status(404).json(formatLogicError('profile', 'Somthing went wrong!', err))
 
   if(profile && profile.err) {
     errors.handle = profile.err
@@ -32,7 +32,7 @@ exports.PostUserProfile = async (req, res) => {
 
   if(profile) return res.status(200).json(profile)
   
-  res.res.status(400)
+  res.status(400)
 }
 
 exports.GetProfileByHandle = async (req, res) => {
@@ -55,10 +55,10 @@ exports.GetProfileById = async (req, res) => {
   if(!profileId) return res.sendStatus(400)
 
   const [err, profile] = await to(profileLogic.GetProfileById(profileId))
-  if(err) return res.status(404).json(formatLogicError('profile', 'There is no profile for this id', err))
+  if(err) return res.status(404).json(formatLogicError('profile', 'There is no profile', err))
 
   if(!profile) {
-    errors.noprofile = 'There is no profile for this id'
+    errors.noprofile = 'There is no profile'
     return res.status(400).json(errors)
   }
 
@@ -94,19 +94,19 @@ exports.PostAddEducation = async (req, res) => {
   if(!isValid) return res.status(400).json(errors)
 
   const [err, profile] = await to(profileLogic.AddProfileEducation(req.user.id, newEdu))
-  if(err) return res.status(404).json(formatLogicError('profile', 'Cant update profile', err))
+  if(err) return res.status(404).json(formatLogicError('profile', `Can't update profile`, err))
   
   res.status(200).json(profile)
 }
 
 exports.DeleteExperience  = async (req, res) => {
-  const {expId} = req.params
-  if(!expId) return res.sendStatus(400)
+  const {experienceId} = req.params
+  if(!experienceId) return res.sendStatus(400)
 
-  const [err, profile] = await to(profileLogic.DeleteExperience(expId, req.user.id))
-  if(err) return res.status(404).json(formatLogicError('Somthing went wrong!', err))
+  const [err, profile] = await to(profileLogic.DeleteExperience(experienceId, req.user.id))
+  if(err) return res.status(404).json(formatLogicError('error', `Can't remove experience`, err))
 
-  res.status(200).json(profile)
+  res.status(200)
 }
 
 exports.DeleteEducation  = async (req, res) => {
@@ -114,18 +114,15 @@ exports.DeleteEducation  = async (req, res) => {
   if(!educationId) return res.sendStatus(400)
 
   const [err, profile] = await to(profileLogic.DeleteEducation(educationId, req.user.id))
-  if(err) return res.status(404).json(formatLogicError('Somthing went wrong!', err))
+  if(err) return res.status(404).json(formatLogicError('error', `Can't remove education`, err))
 
-  res.status(200).json(profile)
+  res.status(200)
 }
 
-exports.DeleteProfile  = async (req, res) => {
-  const {profileId} = req.params
-  if(!profileId) return res.sendStatus(400)
+exports.SetUserProfileStatus  = async (req, res) => {
+  const [err, profile] = await to(profileLogic.SetProfileActiveStatus(req.user.id))
+  if(err) return res.status(404).json(formatLogicError('error', `Can't remove profile`, err))
 
-  const [err, profile] = await to(profileLogic.SetProfileActiveStatus(profileId, req.user.id))
-  if(err) return res.status(404).json(formatLogicError('Somthing went wrong!', err))
-
-  res.status(200).json(profile)
+  res.status(200)
 }
  

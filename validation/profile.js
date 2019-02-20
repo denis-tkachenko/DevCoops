@@ -6,7 +6,7 @@ exports.validateProfileInput = data => {
   const socialMedias = ['youtube', 'twitter', 'facebook', 'linkedin', 'instagram']
   const errors = {}
 
-  initialiseObjectFields(['handle', 'status', 'skills'], data)
+  initialiseObjectFields(['handle', 'status', 'skills'], data, '')
   
   if(!Validator.isLength(data.handle, {min: 2, max:40})) errors.handle = 'Handel needs to be between 2 and 40 characters'
   if(Validator.isEmpty(data.handle)) errors.handle = 'Profile hendel is required'

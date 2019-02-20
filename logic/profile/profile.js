@@ -1,23 +1,24 @@
-const Profile = require('../../models/Profile')
+
+const profileRepository = require('../../data/profile/profile')
 const initialiseObjectFields = require('../../utilities/utilities').initialiseObjectFields
 const to = require('../../utilities/utilities').to
 const moment = require('moment')
 
-exports.GetUserProfileByUserId = userId => Profile.findOne({user: userId, _deleted: false}).populate('user', ['name', 'avatar'])
+exports.GetUserProfileByUserId = userId => profileRepository.GetUserProfileByUserId(userId)
 
 exports.AddEditUserProfile = async (userId, profileFields) => {
-  const [err, existingProfile] = await to(Profile.findOne({user: userId}))
+  const [err, existingProfile] = await to(profileRepository.GetUserProfileByUserId(userId))
   if(err) return Promise.reject(err)
 
   formatProfileInfo(profileFields, userId)
   // Edit profile
-  if(existingProfile) return await Profile.findOneAndUpdate({user: userId}, {$set: profileFields}, {new: true})
+  // if(existingProfile) return await profileRepository.UpdateUserProfile(userId, profileFields)
 
   // Add profile
-  const profileHandle = await Profile.findOne({handle: profileFields.handle})
+  const profileHandle = await profileRepository.GetProfileByHandle(profileFields.handle)
   if(profileHandle) return Promise.reject(['That handle alredy exists'])
 
-  return new Profile(profileFields).save()
+  return profileRepository.AddProfile(profileFields)
 }
 
 function formatProfileInfo(profileFields, userId) {
@@ -35,11 +36,11 @@ function formatProfileInfo(profileFields, userId) {
   if(profileFields.skills !== 'undefined') profileFields.skills = profileFields.skills.split(',')
 }
 
-exports.GetProfileById = profileId => Profile.findById(profileId).populate('user', ['name', 'avatar'])
+exports.GetProfileById = profileId => profileRepository.GetProfileById(profileId)
 
-exports.GetProfileByHandle = handle => Profile.findOne({handle, _deleted: false}).populate('user', ['name', 'avatar'])
+exports.GetProfileByHandle = handle => profileRepository.GetProfileByHandle(handel)
 
-exports.GetAllProfiles = _ => Profile.find({_deleted: false}).populate('user', ['name', 'avatar'])
+exports.GetAllProfiles = () => profileRepository.GetAllProfiles()
 
 exports.AddProfileExperience = async (userId, newExp) => {
   initialiseObjectFields(['title', 'company', 'from', 'to', 'description', 'location'], newExp)
@@ -48,7 +49,7 @@ exports.AddProfileExperience = async (userId, newExp) => {
   if(newExp.from) newExp.from = moment(newExp.from, 'DD/MM/YYYY').toDate()
   if(newExp.to) newExp.to = moment(newExp.to, 'DD/MM/YYYY').toDate()
 
-  return Profile.findOneAndUpdate({user: userId}, {$push: {experiance: newExp}}).populate('user', ['name', 'avatar'])
+  return profileRepository.AddProfileExperience(userId, newExp)
 }
 
 exports.AddProfileEducation = async (userId, newEdu) => {              
@@ -58,31 +59,31 @@ exports.AddProfileEducation = async (userId, newEdu) => {
   if(newEdu.to) newEdu.to = moment(newEdu.to, 'DD/MM/YYYY').toDate()
   if(newEdu.from) newEdu.from = moment(newEdu.from, 'DD/MM/YYYY').toDate()
 
-  return Profile.findOneAndUpdate({user: userId}, {$push: {education: newEdu}}).populate('user', ['name', 'avatar'])
+  return profileRepository.AddProfileEducation(userId, newEdu)
 }
 
-exports.DeleteExperience = async (expId, userId) => {
-  const [err, profile] = await to(Profile.findOne({user: userId}))
+exports.DeleteExperience = async (experienceId, userId) => {
+  const [err, profile] = await to(profileRepository.GetProfileByUserId(userId))
   if(err || !profile) return Promise.reject(err)
 
-  profile.experiance = profile.experiance.filter(experiance => expId !== experiance.id.toString())
+  profile.experiance = profile.experiance.filter(experiance => experienceId !== experiance.id.toString())
 
-  return profile.save()
+  return profileRepository.SaveSchema(profile)
 }
 
 exports.DeleteEducation = async (educationId, userId) => {
-  const [err, profile] = await to(Profile.findOne({user: userId}))
+  const [err, profile] = await to(profileRepository.GetUserProfileByUserId(userId))
   if(err || !profile) return Promise.reject(err)
 
   profile.education = profile.education.filter(education => educationId !== education.id.toString())
 
-  return profile.save()
+  return profileRepository.SaveSchema(profile)
 }
 
-exports.SetProfileActiveStatus = async (profileId, userId) => {
-  const [err, profile] = await to(Profile.findOne({_id: profileId, user: userId}))
+exports.SetProfileActiveStatus = async userId => {
+  const [err, profile] = await to(profileRepository.GetProfileByUserId(userId))
   if(err || !profile) return Promise.reject(err)
 
   profile._deleted = true
-  return profile.save()
+  return profileRepository.SaveSchema(profile)
 }
