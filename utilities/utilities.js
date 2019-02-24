@@ -22,8 +22,9 @@ exports.formatLogicError = (reqName, errMessage, err) => {
   return error
 }
 
-exports.initialiseObjectFields = (fieldaToChack, data = {}, defaultValue) => {
-  fieldaToChack.forEach(field => {
+exports.initialiseObjectFields = (fieldaToinit, data = {}, defaultValue) => {
+
+  fieldaToinit.forEach(field => {
     data[field] = !isEmpty(data[field])? data[field]: defaultValue || null
   })
 }
