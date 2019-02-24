@@ -25,6 +25,6 @@ exports.formatLogicError = (reqName, errMessage, err) => {
 exports.initialiseObjectFields = (fieldaToinit, data = {}, defaultValue) => {
 
   fieldaToinit.forEach(field => {
-    data[field] = !isEmpty(data[field])? data[field]: defaultValue || null
+    data[field] = isEmpty(data[field])? defaultValue || null: data[field]
   })
 }
