@@ -1,8 +1,5 @@
-const User = require('../../models/User')
+const usersRepository = require('../../data/users/users')
 const gravatar = require('gravatar')
-const bcrypt = require('bcryptjs')
-
-exports.FindUserByEmail = async email => User.findOne({email})
 
 exports.AddUser = user => {
   user.avatar = gravatar.url(user.email, {
@@ -11,15 +8,7 @@ exports.AddUser = user => {
     d: 'mm' // Default
   })
 
-  const newUser = new User(user)
-
-  return new Promise((resolve, reject) => {
-    bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(newUser.password, salt, (err, hash) => {
-        if(err) reject(err)
-        newUser.password = hash
-        resolve(newUser.save())
-      })
-    })
-  })
+  return usersRepository.AddUser(user)
 }
+
+exports.FindUserByEmail = email => usersRepository.FindUserByEmail(email)
