@@ -1,6 +1,6 @@
 const Validator = require('validator')
-const isEmpty = require('../utilities/utilities').isEmpty
-const initialiseObjectFields = require('../utilities/utilities').initialiseObjectFields
+const isEmpty = require('../utilities/utilities').IsEmpty
+const initialiseObjectFields = require('../utilities/utilities').InitialiseObjectFields
 
 exports.validateLoginInput = data => {
   let errors = {}

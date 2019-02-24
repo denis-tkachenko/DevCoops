@@ -1,8 +1,8 @@
 const Validator = require('validator')
-const initialiseObjectFields = require('../utilities/utilities').initialiseObjectFields
-const isEmpty = require('../utilities/utilities').isEmpty
+const initialiseObjectFields = require('../utilities/utilities').InitialiseObjectFields
+const isEmpty = require('../utilities/utilities').IsEmpty
 
-exports.validateProfileInput = data => {
+exports.ValidateProfileInput = data => {
   const socialMedias = ['youtube', 'twitter', 'facebook', 'linkedin', 'instagram']
   const errors = {}
 

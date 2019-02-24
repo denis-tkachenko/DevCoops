@@ -59,7 +59,7 @@ const PostSchema = {
         type: Date,
         required: true
       },
-      editedText: {
+      previousText: {
         type: String,
         requirted: true
       }

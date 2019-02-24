@@ -1,13 +1,11 @@
 const profileLogic = require('../../logic/profile/profile')
 const validations = require('../../validation/profile')
-const utilities = require('../../utilities/utilities')
-const to = utilities.to
-const formatLogicError = utilities.formatLogicError
+const to = require('../../utilities/utilities').To
 
 exports.GetUserProfile = async (req, res) => {
   const errors = {}
-  const [err, profile] = await to(profileLogic.GetUserProfileByUserId(req.user.id))
-  if(err) return res.status(404).json(formatLogicError('noprofile', 'There is no profile for this user'))
+  const [err, profile] = await To(profileLogic.GetUserProfileByUserId(req.user.id))
+  if(err) return res.status(404).json({profile: 'There is no profile for this user'})
 
   if(!profile) {
     errors.noprofile = 'There is no profile for this user'
@@ -18,11 +16,11 @@ exports.GetUserProfile = async (req, res) => {
 }
 
 exports.PostUserProfile = async (req, res) => {
-  const [errors, isValid] = validations.validateProfileInput(req.body)
+  const [errors, isValid] = validations.ValidateProfileInput(req.body)
   if(!isValid) return res.status(400).json(errors)
 
-  const [err, profile] = await to(profileLogic.AddEditUserProfile(req.user.id, req.body))
-  if(err) return res.status(404).json(formatLogicError('profile', 'Somthing went wrong!'))
+  const [err, profile] = await To(profileLogic.AddEditUserProfile(req.user.id, req.body))
+  if(err) return res.status(404).json({profile: 'Somthing went wrong!'})
 
   if(profile && profile.err) {
     errors.handle = profile.err
@@ -38,8 +36,8 @@ exports.GetProfileByHandle = async (req, res) => {
   const {handle} = req.params, errors = {}
   if(!handle) return res.sendStatus(400)
 
-  const [err, profile] = await to(profileLogic.GetProfileByHandle(handle))
-  if(err) return res.status(404).json(formatLogicError('profile', 'There is no profile for this handle'))
+  const [err, profile] = await To(profileLogic.GetProfileByHandle(handle))
+  if(err) return res.status(404).json({profile: 'There is no profile for this handle'})
 
   if(!profile) {
     errors.noprofile = 'There is no profile for this user'
@@ -53,8 +51,8 @@ exports.GetProfileById = async (req, res) => {
   const {profileId} = req.params, errors = {}
   if(!profileId) return res.sendStatus(400)
 
-  const [err, profile] = await to(profileLogic.GetProfileById(profileId))
-  if(err) return res.status(404).json(formatLogicError('profile', 'There is no profile'))
+  const [err, profile] = await To(profileLogic.GetProfileById(profileId))
+  if(err) return res.status(404).json({profile: 'There is no profile'})
 
   if(!profile) {
     errors.noprofile = 'There is no profile'
@@ -65,8 +63,8 @@ exports.GetProfileById = async (req, res) => {
 }
 
 exports.GetAllProfiles = async (req, res) => {
-  const [err, profiles] = await to(profileLogic.GetAllProfiles()), errors = {}
-  if(err) return res.status(404).json(formatLogicError('profile', 'There is no profiles'))
+  const [err, profiles] = await To(profileLogic.GetAllProfiles()), errors = {}
+  if(err) return res.status(404).json({profile: 'There is no profiles'})
 
   if(!profiles) {
     errors.noprofile = 'There is no profiles'
@@ -81,8 +79,8 @@ exports.PostAddExperience = async (req, res) => {
   const [errors, isValid] = validations.ValidateExperience(newExp)
   if(!isValid) return res.status(400).json(errors)
 
-  const [err, profile] = await to(profileLogic.AddProfileExperience(req.user.id, newExp))
-  if(err) return res.status(404).json(formatLogicError('profile', 'Cant update profile'))
+  const [err, profile] = await To(profileLogic.AddProfileExperience(req.user.id, newExp))
+  if(err) return res.status(404).json({profile: 'Cant update profile'})
   
   res.status(200).json(profile)
 }
@@ -92,8 +90,8 @@ exports.PostAddEducation = async (req, res) => {
   const [errors, isValid] = validations.ValidateEducation(newEdu)
   if(!isValid) return res.status(400).json(errors)
 
-  const [err, profile] = await to(profileLogic.AddProfileEducation(req.user.id, newEdu))
-  if(err) return res.status(404).json(formatLogicError('profile', `Can't update profile`))
+  const [err, profile] = await To(profileLogic.AddProfileEducation(req.user.id, newEdu))
+  if(err) return res.status(404).json({profile: `Can't update profile`})
   
   res.status(200).json(profile)
 }
@@ -102,8 +100,8 @@ exports.DeleteExperience  = async (req, res) => {
   const {experienceId} = req.params
   if(!experienceId) return res.sendStatus(400)
 
-  const [err, profile] = await to(profileLogic.DeleteExperience(experienceId, req.user.id))
-  if(err) return res.status(404).json(formatLogicError('error', `Can't remove experience`))
+  const [err, profile] = await To(profileLogic.DeleteExperience(experienceId, req.user.id))
+  if(err) return res.status(404).json({profile: `Can't remove experience`})
 
   res.status(200)
 }
@@ -112,15 +110,15 @@ exports.DeleteEducation  = async (req, res) => {
   const {educationId} = req.params
   if(!educationId) return res.sendStatus(400)
 
-  const [err, profile] = await to(profileLogic.DeleteEducation(educationId, req.user.id))
-  if(err) return res.status(404).json(formatLogicError('error', `Can't remove education`))
+  const [err, profile] = await To(profileLogic.DeleteEducation(educationId, req.user.id))
+  if(err) return res.status(404).json({profile: `Can't remove education`})
 
   res.status(200)
 }
 
 exports.SetUserProfileStatus  = async (req, res) => {
-  const [err, profile] = await to(profileLogic.SetProfileActiveStatus(req.user.id))
-  if(err) return res.status(404).json(formatLogicError('error', `Can't remove profile`))
+  const [err, profile] = await To(profileLogic.SetProfileActiveStatus(req.user.id))
+  if(err) return res.status(404).json({profile: `Can't remove profile`})
 
   res.status(200)
 }

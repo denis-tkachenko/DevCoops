@@ -1,4 +1,4 @@
-exports.to = promise =>
+exports.To = promise =>
   promise.then(data => {
      return [null, data];
   })
@@ -11,20 +11,17 @@ const isEmpty = value =>
   (typeof value === 'object' && Object.keys(value).length === 0) ||
   (typeof value === 'string' && value.trim().length === 0)
 
-exports.isEmpty = isEmpty
-  
-exports.formatLogicError = (reqName, errMessage, err) => {
-  const error = {}
+exports.IsEmpty = isEmpty
 
-  error[reqName] = errMessage
-  error.original = err
 
-  return error
-}
-
-exports.initialiseObjectFields = (fieldaToinit, data = {}, defaultValue) => {
+exports.InitialiseObjectFields = (fieldaToinit, data = {}, defaultValue) => {
 
   fieldaToinit.forEach(field => {
     data[field] = isEmpty(data[field])? defaultValue || null: data[field]
   })
+}
+
+exports.ConsoleAndReject = err => {
+  console.error(err)
+  return Promise.reject(err)
 }

@@ -17,5 +17,3 @@ exports.GetAllProfiles = () => Profile.find({_deleted: false}).populate('user', 
 exports.AddProfileExperience = (userId, newExp) => Profile.findOneAndUpdate({user: userId}, {$push: {experiance: newExp}}).populate('user', ['name', 'avatar'])
 
 exports.AddProfileEducation = (userId, newEdu) => Profile.findOneAndUpdate({user: userId}, {$push: {education: newEdu}}).populate('user', ['name', 'avatar'])
-
-exports.SaveSchema = schema => schema.save()
