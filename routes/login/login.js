@@ -1,6 +1,6 @@
 const loginLogic = require('../../logic/login/login')
 const userLogic = require('../../logic/users/users')
-const to = require('../../utilities/utilities').To
+const To = require('../../utilities/utilities').To
 const validateLoginInput = require('../../validation/login').validateLoginInput
 
 exports.PostLogin = async (req, res) => {

@@ -6,4 +6,6 @@ exports.GetPostsByUserId = userId => Post.findOne({user: userId})
 
 exports.GetPostsById = postId => Post.findOne({_id: postId})
 
-exports.UpdatePost = (postId, text, edited) => Post.findOneAndUpdate({_id: postId}, {$set: {text: text}, $push: {_edited: edited}})
+exports.UpdatePostText = (postId, text, edited) => Post.findOneAndUpdate({_id: postId}, {$set: {text: text}, $push: {_edited: edited}})
+
+exports.AddPostComment = (postId, comment) => Post.findOneAndUpdate({_id: postId}, {$push: {comments: comment}})

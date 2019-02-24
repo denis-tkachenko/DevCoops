@@ -35,12 +35,26 @@ exports.PostEditPost = async (req, res) => {
   const {postId} = req.params
   if(!postId) return res.status(400).json({posts: `Can't edit post`})
   
-  const data = req.body
-  const [errors, isValid] = validations.ValidatePostInput(data)
+  const {text} = req.body
+  const [errors, isValid] = validations.ValidatePostInput(text)
   if(!isValid) return res.status(400).json(errors)
 
-  const [err, editedPost] = await To(postsLogic.EditPost(postId, data))
+  const [err, editedPost] = await To(postsLogic.EditPost(postId, text))
   if(err) return res.status(500).json({posts: `Can't edit post`})
+
+  res.sendStatus(200)
+}
+
+exports.PostAddComment = async (req, res) => {
+  const {postId} = req.params
+  if(!postId) return res.status(400).json({posts: `Can't add comment`})
+
+  const {text} = req.body
+  const [errors, isValid] = validations.ValidatePostInput(text)
+  if(!isValid) return res.status(400).json(errors)
+
+  const [err, addComment] = await To(postsLogic.AddPostComment(postId, text, req.user._id))
+  if(err) return res.status(500).json({posts: `Can't add comment`})
 
   res.sendStatus(200)
 }

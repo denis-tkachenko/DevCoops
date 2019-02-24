@@ -19,7 +19,7 @@ exports.GetPostsByUserId = userId => postsRepository.GetPostsByUserId(userId)
 
 exports.GetPostsById = postId => postsRepository.GetPostsById(postId)
 
-exports.EditPost = async (postId, data) => {
+exports.EditPost = async (postId, text) => {
   const [postErr, post] = await To(postsRepository.GetPostsById(postId))
   if(postErr) return ConsoleAndReject(postErr)
   const edited = {
@@ -27,7 +27,20 @@ exports.EditPost = async (postId, data) => {
     previousText: post.text
   }
 
-  const [updateErr, updatePost] = await To(postsRepository.UpdatePost(postId, data.text, edited))
+  const [updateErr, updatePost] = await To(postsRepository.UpdatePostText(postId, text, edited))
+  if(updateErr) return ConsoleAndReject(updateErr)
+
+  return Promise.resolve()
+}
+
+exports.AddPostComment = async (postId, text, userId) => {
+  const comment = {
+    user: userId,
+    text: text,
+    _created: moment().toDate(),
+  }
+
+  const [updateErr, updatePost] = await To(postsRepository.AddPostComment(postId, comment))
   if(updateErr) return ConsoleAndReject(updateErr)
 
   return Promise.resolve()
