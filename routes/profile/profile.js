@@ -100,7 +100,7 @@ exports.DeleteExperience  = async (req, res) => {
   const {experienceId} = req.params
   if(!experienceId) return res.sendStatus(400)
 
-  const [err, profile] = await To(profileLogic.DeleteExperience(experienceId, req.user.id))
+  const [err, result] = await To(profileLogic.DeleteExperience(experienceId, req.user.id))
   if(err) return res.status(404).json({profile: `Can't remove experience`})
 
   res.status(200)
@@ -110,14 +110,14 @@ exports.DeleteEducation  = async (req, res) => {
   const {educationId} = req.params
   if(!educationId) return res.sendStatus(400)
 
-  const [err, profile] = await To(profileLogic.DeleteEducation(educationId, req.user.id))
+  const [err, result] = await To(profileLogic.DeleteEducation(educationId, req.user.id))
   if(err) return res.status(404).json({profile: `Can't remove education`})
 
   res.status(200)
 }
 
 exports.SetUserProfileStatus  = async (req, res) => {
-  const [err, profile] = await To(profileLogic.SetProfileActiveStatus(req.user.id))
+  const [err, result] = await To(profileLogic.SetProfileActiveStatus(req.user.id))
   if(err) return res.status(404).json({profile: `Can't remove profile`})
 
   res.status(200)

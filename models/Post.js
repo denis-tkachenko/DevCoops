@@ -18,22 +18,8 @@ const PostSchema = {
     type: String,
     required: true
   },
-  likes: [
-    {
-      user: {
-        type: Schema.Types.ObjectId,
-        ref: 'users'
-      }
-    }
-  ],
-  dislikes: [
-    {
-      user: {
-        type: Schema.Types.ObjectId,
-        ref: 'users'
-      }
-    }
-  ],
+  likes: [],
+  dislikes: [],
   comments: [
     {
       user: {

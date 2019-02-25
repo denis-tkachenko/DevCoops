@@ -5,15 +5,20 @@ const utilities = require('../../utilities/utilities')
 const To = utilities.To
 const ConsoleAndReject = utilities.ConsoleAndReject
 
-exports.AddPost = (user, post) => {
+exports.AddPost = async (user, post) => {
   post.user =  user._id,
   post.name = user.name
   post.avatar = post.avatar
   post._edited = [],
   post._deleted = false
 
-  return postsRepository.AddPost(post)
+  const [err, result] = await To(postsRepository.AddPost(post))
+  if(err) return ConsoleAndReject(err)
+
+  return Promise.resolve()
 }
+
+exports.GetAllPosts = () => postsRepository.GetAllPosts()
 
 exports.GetPostsByUserId = userId => postsRepository.GetPostsByUserId(userId)
 
@@ -27,8 +32,8 @@ exports.EditPost = async (postId, text) => {
     previousText: post.text
   }
 
-  const [updateErr, updatePost] = await To(postsRepository.UpdatePostText(postId, text, edited))
-  if(updateErr) return ConsoleAndReject(updateErr)
+  const [err, result] = await To(postsRepository.UpdatePostText(postId, text, edited))
+  if(err) return ConsoleAndReject(err)
 
   return Promise.resolve()
 }
@@ -40,8 +45,55 @@ exports.AddPostComment = async (postId, text, userId) => {
     _created: moment().toDate(),
   }
 
-  const [updateErr, updatePost] = await To(postsRepository.AddPostComment(postId, comment))
-  if(updateErr) return ConsoleAndReject(updateErr)
+  const [err, result] = await To(postsRepository.AddPostComment(postId, comment))
+  if(err) return ConsoleAndReject(err)
+
+  return Promise.resolve()
+}
+
+exports.LikePost = async (postId, userId) => {
+  const [postErr, post] = await To(postsRepository.GetPostsById(postId))
+  if(postErr) return ConsoleAndReject(postErr)
+  if(!post) return  Promise.reject({posts: `No post with this ID`})
+
+  if(post.likes.find(like => like.toString() === userId.toString())) {
+    return Promise.reject({posts: `You already liked this post`})
+  }
+  else if(post.dislikes.find(dislike => dislike.toString() === userId.toString())) {// remove dislike
+    const [err, result] = await To(postsRepository.PullFromArrayByKey('dislikes', postId, userId))
+    if(err) return ConsoleAndReject(err)
+  }
+  else {// add like
+    const [err, result] = await To(postsRepository.PushToArrayByKey('likes', postId, userId))
+    if(err) return ConsoleAndReject(err) 
+  }
+
+  return Promise.resolve()
+}
+
+exports.DislikePost = async (postId, userId) => {
+  const [postErr, post] = await To(postsRepository.GetPostsById(postId))
+  if(postErr) return ConsoleAndReject(postErr)
+  if(!post) return  Promise.reject({posts: `No post with this ID`})
+    
+  if(post.dislikes.find(dislike => dislike.toString() === userId.toString())) {
+    return Promise.reject({posts: `You already dislike this post`})
+  }
+  else if(post.likes.find(like => like.toString() === userId.toString())) {// remove like
+    const [err, result] = await To(postsRepository.PullFromArrayByKey('likes', postId, userId))
+    if(err) return ConsoleAndReject(err)
+  }
+  else {// add dislike
+    const [err, result] = await To(postsRepository.PushToArrayByKey('dislikes', postId, userId))
+    if(err) return ConsoleAndReject(err) 
+  }
+
+  return Promise.resolve()
+}
+
+exports.DeletePost = async (postId, userId) => {
+  const [err, result] = await To(postsRepository.DeletePost(postId, userId))
+  if(err) return ConsoleAndReject(err)
 
   return Promise.resolve()
 }
