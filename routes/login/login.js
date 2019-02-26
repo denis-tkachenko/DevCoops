@@ -1,6 +1,6 @@
 const loginLogic = require('../../logic/login/login')
 const userLogic = require('../../logic/users/users')
-const To = require('../../utilities/utilities').To
+const to = require('../../utilities/utilities').To
 const validateLoginInput = require('../../validation/login').validateLoginInput
 
 exports.PostLogin = async (req, res) => {
@@ -15,7 +15,7 @@ exports.PostLogin = async (req, res) => {
     return res.status(404).json(errors)
   }
 
-  const [err, token] = await To(loginLogic.AutenticatedUser(user, password))
+  const [err, token] = await to(loginLogic.AutenticatedUser(user, password))
   if(!token) {
     errors.password = 'Password incorect'
     return res.status(404).json(errors)

@@ -2,14 +2,14 @@
 const profileRepository = require('../../data/profile/profile')
 const initialiseObjectFields = require('../../utilities/utilities').InitialiseObjectFields
 const utilities = require('../../utilities/utilities')
-const To = utilities.To
+const to = utilities.To
 const ConsoleAndReject = utilities.ConsoleAndReject
 const moment = require('moment')
 
 exports.GetUserProfileByUserId = userId => profileRepository.GetUserProfileByUserId(userId)
 
 exports.AddEditUserProfile = async (userId, profileFields) => {
-  const [err, existingProfile] = await To(profileRepository.GetUserProfileByUserId(userId))
+  const [err, existingProfile] = await to(profileRepository.GetUserProfileByUserId(userId))
   if(err) return ConsoleAndReject(err)
 
   formatProfileInfo(profileFields, userId)
@@ -65,7 +65,7 @@ exports.AddProfileEducation = async (userId, newEdu) => {
 }
 
 exports.DeleteExperience = async (experienceId, userId) => {
-  const [err, profile] = await To(profileRepository.GetProfileByUserId(userId))
+  const [err, profile] = await to(profileRepository.GetProfileByUserId(userId))
   if(err || !profile) return ConsoleAndReject(err)
 
   profile.experiance = profile.experiance.filter(experiance => experienceId !== experiance.id.toString())
@@ -74,7 +74,7 @@ exports.DeleteExperience = async (experienceId, userId) => {
 }
 
 exports.DeleteEducation = async (educationId, userId) => {
-  const [err, profile] = await To(profileRepository.GetUserProfileByUserId(userId))
+  const [err, profile] = await to(profileRepository.GetUserProfileByUserId(userId))
   if(err || !profile) return ConsoleAndReject(err)
 
   profile.education = profile.education.filter(education => educationId !== education.id.toString())
@@ -83,7 +83,7 @@ exports.DeleteEducation = async (educationId, userId) => {
 }
 
 exports.SetProfileActiveStatus = async userId => {
-  const [err, profile] = await To(profileRepository.GetProfileByUserId(userId))
+  const [err, profile] = await to(profileRepository.GetProfileByUserId(userId))
   if(err || !profile) return ConsoleAndReject(err)
 
   profile._deleted = true

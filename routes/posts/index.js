@@ -11,5 +11,6 @@ router.post('/comment/:postId', passport.authenticate('jwt', {session: false}), 
 router.post('/like/:postId', passport.authenticate('jwt', {session: false}), posts.PostLike)
 router.post('/dislike/:postId', passport.authenticate('jwt', {session: false}), posts.PostDislike)
 router.delete('/:postId', passport.authenticate('jwt', {session: false}), posts.DeletePost)
+router.delete('/comment/:postId', passport.authenticate('jwt', {session: false}), posts.DeleteComment)
 
 module.exports = router

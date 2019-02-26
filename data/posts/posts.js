@@ -24,6 +24,6 @@ exports.PullFromArrayByKey = (key, postId, value) => {
   query.$pull[key] = value
   
   return Post.updateOne({_id: postId}, query)
-}
+} 
 
 exports.DeletePost = (postId, userId) => Post.deleteOne({_id: postId, user: userId})

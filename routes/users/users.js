@@ -16,7 +16,7 @@ exports.PostRegisterUser = async (req, res) => {
     return res.status(400).json(errors)
   }
 
-  const [err, user] = await To(userLogic.AddUser({name, email, password}))
+  const [err, user] = await to(userLogic.AddUser({name, email, password}))
   if(!user) return res.status(404).json({user: 'Cant add user'})
 
   if(user) {
