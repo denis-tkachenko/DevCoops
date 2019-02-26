@@ -1,5 +1,6 @@
-const express = require('express')
+const MongoClient = require('mongodb').MongoClient
 const mongoose = require('mongoose')
+const express = require('express')
 const bodyParser = require('body-parser')
 const passport = require('passport')
 
@@ -15,12 +16,23 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 // DB Config
-const db = require('./config/keys').mongoURI // DB config
+const db = require('./config/config').DB.connectionWriter // DB config
 
 mongoose // Connect to MongoDb
   .connect(db, { useNewUrlParser: true })
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err))
+
+// // Connect to MongoDb
+// MongoClient.connect(db, (err, db) => {
+//     if(err) {
+//       throw err
+//     }
+
+//     console.log('MongoDB Connected')
+//     // db.close()
+//   })
+
 
 // Passport middleware
 app.use(passport.initialize())
