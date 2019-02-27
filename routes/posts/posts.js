@@ -47,7 +47,7 @@ exports.PostEditPost = async (req, res) => {
   if(!isValid) return res.status(400).json(errors)
 
   const [err, result] = await to(postsLogic.EditPost(postId, text))
-  if(err) return res.status(500).json({posts: `Can't edit post`})
+  if(err || !result) return res.status(500).json({posts: `Can't edit post`})
 
   res.sendStatus(200)
 }
@@ -61,7 +61,7 @@ exports.PostAddComment = async (req, res) => {
   if(!isValid) return res.status(400).json(errors)
 
   const [err, result] = await to(postsLogic.AddPostComment(postId, text, req.user._id))
-  if(err) return res.status(500).json({posts: `Can't add comment`})
+  if(err || !result) return res.status(500).json({posts: `Can't add comment`})
 
   res.sendStatus(200)
 }
@@ -74,7 +74,7 @@ exports.PostLike = async (req, res) => {
   if(err && err.posts) {
     return res.status(404).json(err)
   }
-  else if(err) {
+  else if(err || !result) {
     return res.status(500).json({posts: 'Somthing went wrong!'})
   }
 
@@ -89,7 +89,7 @@ exports.PostDislike = async (req, res) => {
   if(err && err.posts) {
     return res.status(404).json(err)
   }
-  else if(err) {
+  else if(err || !result) {
     return res.status(500).json({posts: 'Somthing went wrong!'})
   }
 
@@ -101,7 +101,7 @@ exports.DeletePost = async (req, res) => {
   if(!postId) return res.status(400).json({posts: 'No post for that ID'})
 
   const [err, result] = await to(postsLogic.DeletePost(postId, userId))
-  if(err) return res.status(500).json({posts: 'Somthing went wrong!'})
+  if(err || !result) return res.status(500).json({posts: 'Somthing went wrong!'})
 
   res.sendStatus(200)
 }
@@ -111,7 +111,7 @@ exports.DeleteComment = async (req, res) => {
   if(!postId) return res.status(400).json({posts: 'No post for that ID'})
 
   const [err, result] = await to(postsLogic.DeleteComment(postId, userId))
-  if(err) return res.status(500).json({posts: 'Somthing went wrong!'})
+  if(err || !result) return res.status(500).json({posts: 'Somthing went wrong!'})
 
   res.sendStatus(200)
 }

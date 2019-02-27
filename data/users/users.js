@@ -1,5 +1,5 @@
-const writer = require('../connection').baseWriter.collection('users')
-const reader = require('../connection').baseReader.collection('users')
+// const writer = require('../connection').baseWriter.collection('users')
+// const reader = require('../connection').baseReader.collection('users')
 const User = require('../../models/User')
 const bcrypt = require('bcryptjs')
 

@@ -8,7 +8,7 @@ exports.GetPostsByUserId = userId => Post.findOne({user: userId})
 
 exports.GetPostsById = postId => Post.findOne({_id: postId})
 
-exports.UpdatePostText = (postId, text, edited) => Post.findOneAndUpdate({_id: postId}, {$set: {text: text}, $push: {_edited: edited}})
+exports.UpdatePostTextAndEdited = (postId, text, edited) => Post.findOneAndUpdate({_id: postId}, {$set: {text: text}, $push: {_edited: edited}})
 
 exports.AddPostComment = (postId, comment) => Post.findOneAndUpdate({_id: postId}, {$push: {comments: comment}})
 
@@ -26,4 +26,4 @@ exports.PullFromArrayByKey = (key, postId, value) => {
   return Post.updateOne({_id: postId}, query)
 } 
 
-exports.DeletePost = (postId, userId) => Post.deleteOne({_id: postId, user: userId})
+exports.DeletePost = (postId, userId) => Post.findOneAndUpdate({_id: postId, user: userId.toString()}, {$set: {_deleted: true}})

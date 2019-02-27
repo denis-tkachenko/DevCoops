@@ -1,8 +1,11 @@
 exports.To = promise =>
-  promise.then(data => {
-     return [null, data];
+  promise
+  .then(data => {
+    return [null, data];
   })
-  .catch(err => [err]);
+  .catch(err => {
+    return [err]
+  });
 
 
 const isEmpty = value => 
