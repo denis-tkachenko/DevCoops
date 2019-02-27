@@ -1,6 +1,6 @@
 const profileLogic = require('../../logic/profile/profile')
 const validations = require('../../validation/profile')
-const to = require('../../utilities/utilities').to
+const to = require('../../utilities/utilities').To
 
 exports.GetUserProfile = async (req, res) => {
   const errors = {}

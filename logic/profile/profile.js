@@ -14,7 +14,7 @@ exports.AddEditUserProfile = async (userId, profileFields) => {
 
   formatProfileInfo(profileFields, userId)
   // Edit profile
-  // if(existingProfile) return await profileRepository.UpdateUserProfile(userId, profileFields)
+  if(existingProfile) return await profileRepository.UpdateUserProfile(userId, profileFields)//TODO: implement- fields for update
 
   // Add profile
   const profileHandle = await profileRepository.GetProfileByHandle(profileFields.handle)
