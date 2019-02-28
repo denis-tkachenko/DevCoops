@@ -11,18 +11,10 @@ exports.PostRegisterUser = async (req, res) => {
   const {name, email, password} = req.body
 
   const userExist = await to(userLogic.FindUserByEmail(email))
-  if(!userExist) {
-    errors.email = 'Email already exists'
-    return res.status(400).json(errors)
-  }
+  if(userExist) return res.status(400).json({users: 'Email already exists'})
 
   const addUser = await to(userLogic.AddUser({name, email, password}))
   if(!addUser) return res.status(404).json({user: 'Cant add user'})
 
-  if(addUser) {
-    delete addUser.password
-    delete addUser._id
-  }
-
-  res.json(addUser)
+  res.status(200).json({name: addUser.name, avatar: addUser.avatar})
 }

@@ -16,10 +16,9 @@ const isEmpty = value =>
 exports.IsEmpty = isEmpty
 
 
-exports.InitialiseObjectFields = (fieldaToinit, data = {}, defaultValue) => {
-
+exports.InitialiseObjectFields = (fieldaToinit, data = {}, defaultValue = null) => {
   fieldaToinit.forEach(field => {
-    data[field] = isEmpty(data[field])? defaultValue || null: data[field]
+    data[field] = isEmpty(data[field])? defaultValue: data[field]
   })
 }
 
