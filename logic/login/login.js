@@ -1,17 +1,15 @@
-const secret = require('../../config/config').secretOrKey.secret
+const secret = require('../../config/config').Secret
+const {promisify} = require('util')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const to = require('../../utilities/utilities').To
 
 exports.AutenticatedUser = async (user, password) => {
   const isMatch = await bcrypt.compare(password, user.password)
   if(!isMatch) return false
 
   const payload = {id: user.id, name: user.name, avatar: user.avatar}
+  const jwtSign = promisify(jwt.sign)
 
-  return new Promise((resolve, reject) => {
-    jwt.sign(payload, secret, {expiresIn: 3600}, (err, token) => {
-      if(err) reject(err)
-      resolve(token)
-    })
-  })
+  return jwtSign(payload, secret, {expiresIn: 3600})
 }
