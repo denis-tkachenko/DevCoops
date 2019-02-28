@@ -1,12 +1,11 @@
-exports.To = promise =>
-  promise
-  .then(data => {
-    return [null, data];
+exports.To = promise => {
+  return promise.then(data => {
+    return data
   })
   .catch(err => {
-    return [err]
+    return consoleErrAndReject(err)
   });
-
+}
 
 const isEmpty = value => 
   value === undefined ||
@@ -24,7 +23,9 @@ exports.InitialiseObjectFields = (fieldaToinit, data = {}, defaultValue) => {
   })
 }
 
-exports.ConsoleAndReject = err => {
+const consoleErrAndReject = err => {
   console.error(err)
-  return Promise.reject(err)
+  return Promise.reject(null)
 }
+
+exports.ConsoleErrAndReject = consoleErrAndReject

@@ -1,16 +1,14 @@
 
 const profileRepository = require('../../data/profile/profile')
 const initialiseObjectFields = require('../../utilities/utilities').InitialiseObjectFields
-const utilities = require('../../utilities/utilities')
-const to = utilities.To
-const ConsoleAndReject = utilities.ConsoleAndReject
 const moment = require('moment')
+const to = require('../../utilities/utilities').To
 
-exports.GetUserProfileByUserId = userId => profileRepository.GetUserProfileByUserId(userId)
+exports.GetProfileByUserId = userId => profileRepository.GetProfileByUserId(userId)
 
 exports.AddEditUserProfile = async (userId, profileFields) => {
-  const [err, existingProfile] = await to(profileRepository.GetUserProfileByUserId(userId))
-  if(err) return ConsoleAndReject(err)
+  const existingProfile = await to(profileRepository.GetProfileByUserId(userId))
+  if(!existingProfile) return null
 
   formatProfileInfo(profileFields, userId)
   // Edit profile
@@ -18,7 +16,7 @@ exports.AddEditUserProfile = async (userId, profileFields) => {
 
   // Add profile
   const profileHandle = await profileRepository.GetProfileByHandle(profileFields.handle)
-  if(profileHandle) return Promise.reject(['That handle alredy exists'])
+  if(profileHandle) return {err: 'That handle alredy exists'}
 
   return profileRepository.AddProfile(profileFields)
 }
@@ -40,7 +38,7 @@ function formatProfileInfo(profileFields, userId) {
 
 exports.GetProfileById = profileId => profileRepository.GetProfileById(profileId)
 
-exports.GetProfileByHandle = handle => profileRepository.GetProfileByHandle(handel)
+exports.GetProfileByHandle = handle => profileRepository.GetProfileByHandle(handle)
 
 exports.GetAllProfiles = () => profileRepository.GetAllProfiles()
 
@@ -65,27 +63,22 @@ exports.AddProfileEducation = async (userId, newEdu) => {
 }
 
 exports.DeleteExperience = async (experienceId, userId) => {
-  const [err, profile] = await to(profileRepository.GetProfileByUserId(userId))
-  if(err || !profile) return ConsoleAndReject(err)
+  const profile = await to(profileRepository.GetProfileByUserId(userId))
+  if(!profile) return null
 
-  profile.experiance = profile.experiance.filter(experiance => experienceId !== experiance.id.toString())
-
-  return profileRepository.SaveSchema(profile)
+  return profileRepository.DeleteExperience(userId, profile._id.toString(), experienceId)
 }
 
 exports.DeleteEducation = async (educationId, userId) => {
-  const [err, profile] = await to(profileRepository.GetUserProfileByUserId(userId))
-  if(err || !profile) return ConsoleAndReject(err)
+  const profile = await to(profileRepository.GetProfileByUserId(userId))
+  if(!profile) return null
 
-  profile.education = profile.education.filter(education => educationId !== education.id.toString())
-
-  return profileRepository.SaveSchema(profile)
+  return profileRepository.DeleteEducation(userId, profile._id.toString(), educationId)
 }
 
 exports.SetProfileActiveStatus = async userId => {
-  const [err, profile] = await to(profileRepository.GetProfileByUserId(userId))
-  if(err || !profile) return ConsoleAndReject(err)
+  const profile = await to(profileRepository.GetProfileByUserId(userId))
+  if(!profile) return null
 
-  profile._deleted = true
-  return profileRepository.SaveSchema(profile)
+  return profileRepository.SetProfileActiveStatus(userId, profile._id, true)
 }

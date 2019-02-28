@@ -9,13 +9,13 @@ exports.PostLogin = async (req, res) => {
 
   const {email, password} = req.body
 
-  const user = await userLogic.FindUserByEmail(email)
-  if(!user) {
+  const user = await to(userLogic.FindUserByEmail(email))
+  if(!user || user.err) {
     errors.email = 'User not found'
     return res.status(404).json(errors)
   }
 
-  const [err, token] = await to(loginLogic.AutenticatedUser(user, password))
+  const token = await to(loginLogic.AutenticatedUser(user, password))
   if(!token) {
     errors.password = 'Password incorect'
     return res.status(404).json(errors)
