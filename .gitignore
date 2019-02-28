@@ -5,3 +5,4 @@ client\node_modules
 
 # Don't track files
 package-lock.json
+.gitignore.swp
