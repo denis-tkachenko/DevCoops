@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import {To as to} from '../../utilities/utilities'
-import axios from 'axios'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { registerUser } from '../../actions/authactions'
 
 class Register extends Component {
   constructor() {
@@ -14,10 +15,10 @@ class Register extends Component {
     }
   }
 
-  onChange = e => this.setState({[e.target.name]: e.target.value})
+  onChange = event => this.setState({[event.target.name]: event.target.value})
 
-  onSubmit = async e => {
-    e.preventDefault()
+  onSubmit = async event => {
+    event.preventDefault()
     const newUser = {
       name: this.state.name,
       email: this.state.email,
@@ -25,17 +26,12 @@ class Register extends Component {
       password2: this.state.password2
     }
 
-    axios.post('/users/register', newUser)
-    .then(result => {
-      console.log(result)
-    })
-    .catch(err => {
-      this.setState({errors: err.response.data})
-    })
+    this.props.registerUser(newUser)
   }
 
   render() {
     const {errors} = this.state
+    const {user} = this.props.auth
 
     return (
       <div className="register">
@@ -43,7 +39,7 @@ class Register extends Component {
           <div className="row">
             <div className="col-md-8 m-auto">
               <h1 className="display-4 text-center">Sign Up</h1>
-              <p className="lead text-center">Create your DevConnector account</p>
+              <p className="lead text-center">Create your DevCoops account</p>
               <form noValidate onSubmit={this.onSubmit}>
                 <div className="form-group">
                   <input type="text" placeholder="Name" name="name" 
@@ -90,4 +86,11 @@ class Register extends Component {
   }
 }
 
-export default Register
+Register.propTypes = {
+  registerUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired
+}
+
+const mapStateToProps = state => ({auth: state.auth})
+
+export default connect(mapStateToProps, {registerUser})(Register)
