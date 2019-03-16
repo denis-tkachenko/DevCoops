@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { registerUser } from '../../actions/authactions'
 
@@ -15,6 +16,12 @@ class Register extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.errors) {
+      this.setState({errors: nextProps.errors})
+    }
+  }
+
   onChange = event => this.setState({[event.target.name]: event.target.value})
 
   onSubmit = async event => {
@@ -25,13 +32,12 @@ class Register extends Component {
       password: this.state.password,
       password2: this.state.password2
     }
-
-    this.props.registerUser(newUser)
+ 
+    this.props.registerUser(newUser, this.props.history)
   }
 
   render() {
     const {errors} = this.state
-    const {user} = this.props.auth
 
     return (
       <div className="register">
@@ -88,9 +94,13 @@ class Register extends Component {
 
 Register.propTypes = {
   registerUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
 }
 
-const mapStateToProps = state => ({auth: state.auth})
+const mapStateToProps = state => ({
+  auth: state.auth,
+  errors: state.errors
+})
 
-export default connect(mapStateToProps, {registerUser})(Register)
+export default connect(mapStateToProps, {registerUser})(withRouter(Register))
