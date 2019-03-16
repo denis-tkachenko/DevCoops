@@ -5,7 +5,7 @@ const initialiseObjectFields = require('../utilities/utilities').InitialiseObjec
 exports.validateLoginInput = data => {
   let errors = {}
   
-  initialiseObjectFields(['email', 'password'], data)
+  initialiseObjectFields(['email', 'password'], data, '')
 
   if(!Validator.isEmail(data.email)) errors.email = 'Email is invalid'
   if(Validator.isEmpty(data.email)) errors.email = 'Email field is required'
